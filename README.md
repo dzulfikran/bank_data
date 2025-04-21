@@ -35,3 +35,4 @@ MEDIA SOSIAL⁣⁣
 - https://github.com/deddyrahmat
 
 #simpeg #web #website #webdesign #webdesigner #frontend #html #css #js #bootstrap #code #coding #ngoding #coder #coderslife #programmer #programmers #programmering #programmerslife #developer
+# bankdata
