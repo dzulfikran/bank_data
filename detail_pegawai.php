@@ -19,6 +19,7 @@
         $func = "link_profil";
     }
     
+    $id_pegawai_login = $_SESSION['id_pegawai'];
 
     // lakukan filter data berdasarkan nip yang telah ditangkap divariabel nip dan jalankan function query
     // simpan hasil query kedalam variabel data_detail
@@ -39,7 +40,7 @@
         <div class="card shadow mb-4 border-left-primary">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="<?= asset('_assets/img/').$data_detail[0]['foto_pegawai']; ?>" class="img-fluid shadow" alt="Foto Pegawai">
+                    <img src="<?= asset('_assets/img/profile/').$data_detail[0]['foto_pegawai']; ?>" class="img-fluid shadow" style="width: 200px; height: 300px;" alt="Foto Pegawai">
                     <h2 class="mt-3"><?= ucwords($data_detail[0]['nama_pegawai']) ?></h2>
                     <span class="text-muted"><?= $data_detail[0]['nip'] ?></span>
                 </div>
@@ -77,23 +78,29 @@
                     </div> -->
                     <div class="tab-pane fade" id="nav-pendidikan" role="tabpanel">
 
+                    <?php if (cek_role('admin') || ($id_pegawai_login == $id_pegawai)) : ?>
                     <a href="<?= base_url('pendidikan') ?>?id_pegawai=<?= $data_detail[0]['id_pegawai'] ?>" class="btn btn-primary btn-sm float-right" style="margin: 20px;"><i class="fas fa-user-plus"></i> Tambah Pendidikan</a>
+                    <?php endif ?>
 
                     <?php
                         require_once "detail_pegawai/pendidikan.php";
                     ?>
                     </div>
                     <div class="tab-pane fade" id="nav-jabatan" role="tabpanel">
-                        
+                    
+                    <?php if (cek_role('admin') || ($id_pegawai_login == $id_pegawai)) : ?>
                     <a href="<?= base_url('jabatan') ?>?id_pegawai=<?= $data_detail[0]['id_pegawai'] ?>" class="btn btn-primary btn-sm float-right" style="margin: 20px;"><i class="fas fa-user-plus"></i> Tambah Jabatan</a>
-                       
+                    <?php endif ?>
+                    
                     <?php
                         require_once "detail_pegawai/jabatan.php";
                     ?>
                     </div>
                     <div class="tab-pane fade" id="nav-pangkat" role="tabpanel">
-
+                    
+                    <?php if (cek_role('admin') || ($id_pegawai_login == $id_pegawai)) : ?>
                     <a href="<?= base_url('pangkat') ?>?id_pegawai=<?= $data_detail[0]['id_pegawai'] ?>" class="btn btn-primary btn-sm float-right" style="margin: 20px;"><i class="fas fa-user-plus"></i> Tambah Pangkat</a>
+                    <?php endif ?>
 
                     <?php
                         require_once "detail_pegawai/pangkat.php";

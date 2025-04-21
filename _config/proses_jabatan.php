@@ -94,4 +94,22 @@
             window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
             </script>';        
         }
-    }
+    } elseif (isset($_GET['delete'])) {
+        $id_jabatan = intval($_GET['id']);
+        $id_pegawai = intval($_GET['id_pegawai']);
+        
+        // Hapus data pegawai dari database
+        $delete = mysqli_query($koneksi, "DELETE FROM jabatan WHERE id_jabatan = $id_jabatan");
+    
+        if ($delete) {
+            echo '<script>
+            alert("Data Berhasil Dihapus")
+            window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
+            </script>';  
+        } else {
+            echo '<script>
+            alert("Data Gagal Dihapus")
+            window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
+            </script>';
+        }
+    } 

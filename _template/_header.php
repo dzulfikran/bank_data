@@ -21,6 +21,23 @@
 
   $id = $_SESSION['id_user'];
   $user = query("SELECT * FROM user WHERE id_user='$id'");
+
+  $id_pegawai = null;
+  $namaPegawai = $user[0]['username'];
+  $foto = 'profil.jpg'; // fallback
+
+  // Step 1: Ambil id_pegawai dari tabel user
+  if ($user && isset($user[0]['id_pegawai'])) {
+      $id_pegawai = $user[0]['id_pegawai'];
+
+      // Step 2: Ambil foto_pegawai dari tabel pegawai
+      $fp = query("SELECT * FROM pegawai WHERE id_pegawai = '$id_pegawai'");
+      if ($fp && isset($fp[0]['foto_pegawai']) && !empty($fp[0]['foto_pegawai'])) {
+          $foto = $fp[0]['foto_pegawai'];
+          $namaPegawai = $fp[0]['nama_pegawai'];
+      }
+  }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,11 +63,11 @@
   <link href="<?= asset('_assets/css/sb-admin-2.min.css') ?>" rel="stylesheet">
 
   <!-- favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="<?= asset("_assets/img/design/apple-touch-icon.png") ?>">
-  <link rel="icon" type="image/png" sizes="32x32" href="<?= asset("_assets/img/design/favicon-32x32.png") ?>">
-  <link rel="icon" type="image/png" sizes="16x16" href="<?= asset("_assets/img/design/favicon-16x16.png") ?>">
+  <link rel="apple-touch-icon" sizes="180x180" href="<?= asset("_assets/img/design/kominfo.png") ?>">
+  <link rel="icon" type="image/png" sizes="32x32" href="<?= asset("_assets/img/design/kominfo-32x32.png") ?>">
+  <link rel="icon" type="image/png" sizes="16x16" href="<?= asset("_assets/img/design/kominfo-16x16.png") ?>">
   <link rel="manifest" href="<?= asset("_assets/img/design/site.webmanifest") ?>">
-  <link rel="mask-icon" href="<?= asset("_assets/img/design/safari-pinned-tab.svg") ?>" color="#5bbad5">
+  <link rel="mask-icon" href="<?= asset("_assets/img/design/kominfo-bw.png") ?>" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   
@@ -76,9 +93,13 @@
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url() ?>">
-        <div class="sidebar-brand-icon rotate-n-15">
+        <!-- <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-user-circle"></i>
+        </div> -->
+        <div class="sidebar-brand-icon rotate-n-0">
+          <img class="img-profile rounded-circle" src="<?= asset('_assets/img/profile/kominfo.png') ?>" alt="User Icon" style="height: auto; width: 40px; object-fit: ;">
         </div>
+
         <div class="sidebar-brand-text mx-3">BANKDATA</div>
       </a>
 
@@ -100,7 +121,7 @@
           <span>Data Pegawai</span></a>
       </li>
 
-      <!-- Nav Item - Pages Collapse Menu -->
+      <!-- Nav Item - Pages Collapse Menu
       <li class="nav-item <?= isset($riwayat) == 'riwayat' ? 'active' : null ?>">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRiwayat" aria-expanded="true" aria-controls="collapseRiwayat">
           <i class="fas fa-fw fa-history"></i>
@@ -114,10 +135,10 @@
             <a class="collapse-item <?= isset($pangkat) == 'pangkat' ? 'active' : null ?>" href="<?= base_url('pangkat') ?>">Pangkat</a>
           </div>
         </div>
-      </li>
+      </li> -->
 
       <!-- Divider -->
-      <hr class="sidebar-divider d-none d-md-block">
+      <!-- <hr class="sidebar-divider d-none d-md-block"> -->
 
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item <?= isset($surat) == 'surat' ? 'active' : null ?>">
@@ -128,17 +149,26 @@
         <div id="collapseSurat" class="collapse" aria-labelledby="headingSurat" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Surat Masuk/Keluar:</h6>
-            <a class="collapse-item <?= (isset($_GET['jenis']) && $_GET['jenis'] == 'masuk') ? 'active' : '' ?>" 
-              href="<?= base_url('surat') ?>?jenis=masuk">
+            <a class="collapse-item <?= isset($surat_masuk) == 'surat_masuk' ? 'active' : null ?>" href="<?= base_url('surat/surat_masuk') ?>">
               Surat Masuk
             </a>
-            <a class="collapse-item <?= (isset($_GET['jenis']) && $_GET['jenis'] == 'keluar') ? 'active' : '' ?>" 
-              href="<?= base_url('surat') ?>?jenis=keluar">
+            <a class="collapse-item <?= isset($surat_keluar) == 'surat_keluar' ? 'active' : null ?>" href="<?= base_url('surat/surat_keluar') ?>">
               Surat Keluar
             </a>
           </div>
         </div>
       </li>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+      
+      <?php if (cek_role('admin')) : ?>
+      <li class="nav-item <?= isset($akun) == 'akun' ? 'active' : null ?> ">
+        <a class="nav-link" href="<?= base_url('akun/akun') ?>">
+          <i class="fas fa-fw fa-user-circle"></i>
+          <span>Daftar Akun</span></a>
+      </li>
+      <?php endif; ?>
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
@@ -197,8 +227,8 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $user[0]['username'] ?></span>
-                <img class="img-profile rounded-circle" alt="Image" src="<?= asset('_assets/img/profil.jpg') ?>">
+                <span class="mr-2 d-none d-lg-inline text-gray-800 medium"><?= $namaPegawai ?></span>
+                <img class="img-profile rounded-circle" alt="Image" src="<?= asset('_assets/img/profile/' . $foto) ?>">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

@@ -1,8 +1,8 @@
 <?php
 $data_pegawai = query("SELECT * FROM pegawai WHERE id_pegawai='$id_pegawai'");
 ?>
-<table class="text-dark mt-3">
-    <tr>
+<table class="text-dark mt-2">
+    <tr class="mt-2">
         <td>NIP</td>
         <td>:</td>
         <td><?= $data_pegawai[0]['nip'] ?></td>

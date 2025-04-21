@@ -25,7 +25,7 @@ if (isset($_GET['add'])) {
 
     if (in_array($tipe, $ekstensi) === true) {
         if ($ukuranFile < 1048576) { // 1 MB
-            $lokasi = "../_assets/img/" . $foto;
+            $lokasi = "../_assets/img/profile/" . $foto;
             $query = "INSERT INTO pegawai (nip, nama_pegawai, foto_pegawai, tempat_lahir, tanggal_lahir, jenis_kelamin, no_hp, agama, email, alamat, gol_darah, status_pernikahan, status_kepegawaian, status_user) 
                       VALUES ('$nip', '$nama_pegawai', '$foto', '$tempat_lahir', '$tgl_lahir', '$jk', '$no_hp', '$agama', '$email', '$alamat', '$goldarah', '$stat_nikah', '$stat_pegawai', 'aktif')";
 
@@ -102,8 +102,8 @@ elseif (isset($_GET['edit'])) {
         if (in_array($tipe, $ekstensi) === true) {
             if ($ukuranFile < 1048576) { // 1 MB
                 // Hapus foto lama sebelum upload yang baru
-                if (!empty($foto_lama) && file_exists("../_assets/img/" . $foto_lama)) {
-                    unlink("../_assets/img/" . $foto_lama);
+                if (!empty($foto_lama) && file_exists("../_assets/img/profile/" . $foto_lama)) {
+                    unlink("../_assets/img/profile/" . $foto_lama);
                 }
 
                 // Update data pegawai dengan foto baru
@@ -118,7 +118,7 @@ elseif (isset($_GET['edit'])) {
                           WHERE id_pegawai = $id_pegawai";
 
                 if (mysqli_query($koneksi, $query)) {
-                    move_uploaded_file($sumber, "../_assets/img/" . $foto);
+                    move_uploaded_file($sumber, "../_assets/img/profile/" . $foto);
                     echo '<script>
                             alert("Data Berhasil Diperbarui");
                             window.location = "' . base_url('pegawai') . '";
@@ -147,7 +147,7 @@ elseif (isset($_GET['delete'])) {
 
     if ($data) {
         $foto = $data['foto_pegawai'];
-        $lokasi = "../_assets/img/" . $foto;
+        $lokasi = "../_assets/img/profile/" . $foto;
 
         // Hapus data pegawai dari database
         $delete = mysqli_query($koneksi, "DELETE FROM pegawai WHERE id_pegawai = $id_pegawai");

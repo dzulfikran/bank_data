@@ -30,7 +30,7 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
 
-  <title>SIMPEG - Login</title>
+  <title>BANKDATA - Login</title>
 
   <!-- Custom fonts for this template-->
   <link href="<?= asset('_assets/vendor/fontawesome-free/css/all.min.css') ?>" rel="stylesheet" type="text/css">

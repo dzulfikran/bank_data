@@ -3,39 +3,35 @@
 require_once "config.php";
 
 if (isset($_GET['add'])) {
-    $jenis = mysqli_real_escape_string($koneksi, $_POST['jenis']);
     $tgl_surat = strip_tags($_POST['tgl_surat']);
     $nmr_surat = strip_tags($_POST['nmr_surat']);
-    $deskripsi = strip_tags($_POST['deskripsi']);
+    $alamat = strip_tags($_POST['alamat']);
+    $tgl_terima = strip_tags($_POST['tgl_terima']);
+    $perihal = strip_tags($_POST['perihal']);
+    $penerima = strip_tags($_POST['penerima']);
 
-    if ($jenis == "masuk") {
-        $query = "INSERT INTO surat_masuk (tanggal_surat, nomor_surat, deskripsi)
-                  VALUES ('$tgl_surat', '$nmr_surat', '$deskripsi')";
-    } else {
-        $query = "INSERT INTO surat_keluar (tanggal_surat, nomor_surat, deskripsi)
-                  VALUES ('$tgl_surat', '$nmr_surat', '$deskripsi')";
-    }
+    $query = "INSERT INTO surat_masuk (tanggal_surat, nomor_surat, alamat_surat, tanggal_terima, perihal, penerima)
+                  VALUES ('$tgl_surat', '$nmr_surat', '$alamat', '$tgl_terima', '$perihal', '$penerima')";
 
     if (mysqli_query($koneksi, $query)) {
         echo '<script>
                 alert("Data Berhasil Ditambah");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis . '";
+                window.location = "' . base_url('surat/surat_masuk') .'";
               </script>';
     } else {
         echo '<script>
                 alert("Gagal Menyimpan Data");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis . '";
+                window.location = "' . base_url('surat/surat_masuk') . '";
               </script>';
     }
 }
 
 elseif (isset($_GET['add_doc'])) {
     $id_surat = isset($_GET['id']) ? intval($_GET['id']) : 0; 
-    $jenis_surat = isset($_GET['jenis']) ? htmlspecialchars($_GET['jenis']) : ''; 
     
     // Validasi ID Surat
-    if ($id_surat <= 0 || empty($jenis_surat)) {
-        echo '<script>alert("ID atau Jenis Surat tidak valid"); window.history.back();</script>';
+    if ($id_surat <= 0 ) {
+        echo '<script>alert("ID Surat tidak valid"); window.history.back();</script>';
         exit();
     }
 
@@ -46,10 +42,10 @@ elseif (isset($_GET['add_doc'])) {
     }
 
     // Tentukan direktori penyimpanan
-    $targetDir = "../_docs/". ($jenis_surat == "masuk" ? "masuk" : "keluar")."/";
+    $targetDir = "../_docs/masuk/";
 
     // Ambil informasi surat dari database
-    $query = "SELECT nomor_surat, tanggal_surat FROM " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $query = "SELECT nomor_surat, tanggal_surat FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     mysqli_stmt_execute($stmt);
@@ -93,7 +89,7 @@ elseif (isset($_GET['add_doc'])) {
     }
 
     // Update nama file di database
-    $updateQuery = "UPDATE " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " SET dokumen = ? WHERE id_surat = ?";
+    $updateQuery = "UPDATE surat_masuk SET dokumen = ? WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $updateQuery);
     mysqli_stmt_bind_param($stmt, "si", $namaFileBaru, $id_surat);
     $success = mysqli_stmt_execute($stmt);
@@ -102,7 +98,7 @@ elseif (isset($_GET['add_doc'])) {
     if ($success) {
         echo '<script>
                 alert("Dokumen berhasil diunggah");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis_surat . '";
+                window.location = "' . base_url('surat/surat_masuk') . '";
               </script>';
     } else {
         echo '<script>
@@ -114,15 +110,14 @@ elseif (isset($_GET['add_doc'])) {
 
 elseif (isset($_GET['open_doc'])) {
     $id_surat = isset($_GET['id']) ? intval($_GET['id']) : 0;
-    $jenis_surat = isset($_GET['jenis']) ? htmlspecialchars($_GET['jenis']) : '';
 
-    if ($id_surat <= 0 || empty($jenis_surat)) {
-        echo '<script>alert("ID atau Jenis Surat tidak valid!"); window.history.back();</script>';
+    if ($id_surat <= 0 ) {
+        echo '<script>alert("ID Surat tidak valid!"); window.history.back();</script>';
         exit();
     }
 
     // Ambil nama file dokumen dari database
-    $query = "SELECT dokumen FROM " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $query = "SELECT dokumen FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     mysqli_stmt_execute($stmt);
@@ -136,8 +131,7 @@ elseif (isset($_GET['open_doc'])) {
     }
 
     // Buat path file berdasarkan jenis surat
-    $folder = ($jenis_surat == "masuk") ? "masuk" : "keluar";
-    $filePath = realpath("../_docs/$folder/" . $dataSurat['dokumen']);
+    $filePath = realpath("../_docs/masuk/" . $dataSurat['dokumen']);
 
     // Periksa apakah file benar-benar ada di dalam folder yang diizinkan
     if (!$filePath || !file_exists($filePath)) {
@@ -146,23 +140,22 @@ elseif (isset($_GET['open_doc'])) {
     }
 
     // Redirect untuk membuka dokumen dalam tab baru
-    // header("Location: " . base_url("_docs/$folder/" . $dataSurat['dokumen']));
-    $fileUrl = rtrim(base_url("_docs/$folder/" . $dataSurat['dokumen']), ".php");
+    // header("Location: " . base_url("_docs/masuk/" . $dataSurat['dokumen']));
+    $fileUrl = rtrim(base_url("_docs/masuk/" . $dataSurat['dokumen']), ".php");
     header("Location: " . $fileUrl);
     exit();
 }
 
 elseif (isset($_GET['download_doc'])) {
     $id_surat = intval($_GET['id']);
-    $jenis_surat = htmlspecialchars($_GET['jenis']);
 
-    if ($id_surat <= 0 || empty($jenis_surat)) {
-        echo '<script>alert("ID atau Jenis Surat tidak valid!"); window.history.back();</script>';
+    if ($id_surat <= 0) {
+        echo '<script>alert("ID Surat tidak valid!"); window.history.back();</script>';
         exit();
     }
 
     // Ambil nama file dokumen dari database
-    $query = "SELECT dokumen FROM " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $query = "SELECT dokumen FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     mysqli_stmt_execute($stmt);
@@ -176,8 +169,7 @@ elseif (isset($_GET['download_doc'])) {
     }
 
     // Path file
-    $folder = ($jenis_surat == "masuk") ? "masuk" : "keluar";
-    $filePath = realpath("../_docs/$folder/" . $dataSurat['dokumen']);
+    $filePath = realpath("../_docs/masuk/" . $dataSurat['dokumen']);
 
     // Cek apakah file ada dan dalam folder yang benar
     if (!$filePath || !file_exists($filePath)) {
@@ -201,15 +193,14 @@ elseif (isset($_GET['download_doc'])) {
 
 elseif (isset($_GET['delete_doc'])) {
     $id_surat = isset($_GET['id']) ? intval($_GET['id']) : 0;
-    $jenis_surat = isset($_GET['jenis']) ? htmlspecialchars($_GET['jenis']) : '';
 
-    if ($id_surat <= 0 || empty($jenis_surat)) {
-        echo '<script>alert("ID atau Jenis Surat tidak valid!"); window.history.back();</script>';
+    if ($id_surat <= 0) {
+        echo '<script>alert("ID Surat tidak valid!"); window.history.back();</script>';
         exit();
     }
 
     // Ambil nama file dokumen dari database
-    $query = "SELECT dokumen FROM " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $query = "SELECT dokumen FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     mysqli_stmt_execute($stmt);
@@ -223,8 +214,7 @@ elseif (isset($_GET['delete_doc'])) {
     }
 
     // Buat path file berdasarkan jenis surat
-    $folder = ($jenis_surat == "masuk") ? "masuk" : "keluar";
-    $filePath = realpath("../_docs/$folder/" . $dataSurat['dokumen']);
+    $filePath = realpath("../_docs/masuk/" . $dataSurat['dokumen']);
 
     // Hapus file dari server jika ada
     if ($filePath && file_exists($filePath)) {
@@ -232,7 +222,7 @@ elseif (isset($_GET['delete_doc'])) {
     }
 
     // Hapus nama dokumen dari database
-    $deleteQuery = "UPDATE " . ($jenis_surat == "masuk" ? "surat_masuk" : "surat_keluar") . " SET dokumen = NULL WHERE id_surat = ?";
+    $deleteQuery = "UPDATE surat_masuk SET dokumen = NULL WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $deleteQuery);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     $success = mysqli_stmt_execute($stmt);
@@ -241,7 +231,7 @@ elseif (isset($_GET['delete_doc'])) {
     if ($success) {
         echo '<script>
                 alert("Dokumen berhasil dihapus!");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis_surat . '";
+                window.location = "' . base_url('surat/surat_masuk') . '";
               </script>';
     } else {
         echo '<script>
@@ -253,36 +243,38 @@ elseif (isset($_GET['delete_doc'])) {
 
 elseif (isset($_GET['edit'])) {
     $id_surat = intval($_POST['id_surat']);  // Pastikan ID dalam bentuk angka
-    $jenis = htmlspecialchars($_POST['jenis']); // Hindari XSS
     $tgl_surat = strip_tags($_POST['tgl_surat']);
     $nmr_surat = strip_tags($_POST['nmr_surat']);
-    $deskripsi = strip_tags($_POST['deskripsi']);
+    $alamat = strip_tags($_POST['alamat']);
+    $tgl_terima = strip_tags($_POST['tgl_terima']);
+    $perihal = strip_tags($_POST['perihal']);
+    $penerima = strip_tags($_POST['penerima']);
 
     // Cek apakah semua data terisi
-    if (empty($id_surat) || empty($jenis) || empty($tgl_surat) || empty($nmr_surat) || empty($deskripsi)) {
+    if (empty($id_surat) || empty($tgl_surat) || empty($nmr_surat) || empty($perihal) || empty($alamat) || empty($tgl_terima)) {
         echo '<script>alert("Semua data harus diisi!"); window.history.back();</script>';
         exit();
     }
 
-    // Pilih tabel berdasarkan jenis surat
-    $tabel = ($jenis == "masuk") ? "surat_masuk" : "surat_keluar";
-
     // Query update
-    $query = "UPDATE $tabel SET 
+    $query = "UPDATE surat_masuk SET 
                 tanggal_surat = ?, 
                 nomor_surat = ?, 
-                deskripsi = ? 
+                alamat_surat = ?,
+                tanggal_terima = ?,
+                perihal = ?,
+                penerima = ? 
               WHERE id_surat = ?";
 
     $stmt = mysqli_prepare($koneksi, $query);
-    mysqli_stmt_bind_param($stmt, "sssi", $tgl_surat, $nmr_surat, $deskripsi, $id_surat);
+    mysqli_stmt_bind_param($stmt, "ssssssi", $tgl_surat, $nmr_surat, $alamat, $tgl_terima, $perihal, $penerima, $id_surat);
     $success = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
     if ($success) {
         echo '<script>
                 alert("Data Berhasil Diperbarui");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis . '";
+                window.location = "' . base_url('surat/surat_masuk') . '";
               </script>';
     } else {
         echo '<script>
@@ -295,16 +287,9 @@ elseif (isset($_GET['edit'])) {
 
 elseif (isset($_GET['delete'])) {
     $id_surat = intval($_GET['id']);  // Pastikan ID dalam bentuk angka
-    $jenis = htmlspecialchars($_GET['jenis']); // Hindari XSS
-
-    // Pastikan jenis surat valid
-    if ($jenis !== "masuk" && $jenis !== "keluar") {
-        echo '<script>alert("Jenis surat tidak valid!"); window.history.back();</script>';
-        exit();
-    }
 
     // Ambil dokumen sebelum menghapus data
-    $query = "SELECT dokumen FROM " . ($jenis == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $query = "SELECT dokumen FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     mysqli_stmt_execute($stmt);
@@ -318,10 +303,10 @@ elseif (isset($_GET['delete'])) {
     }
 
     $dokumen = $data['dokumen'];
-    $filePath = "../_docs/" . ($jenis == "masuk" ? "masuk" : "keluar") . "/$dokumen";
+    $filePath = "../_docs/masuk" . "/$dokumen";
 
     // Hapus data dari database
-    $deleteQuery = "DELETE FROM " . ($jenis == "masuk" ? "surat_masuk" : "surat_keluar") . " WHERE id_surat = ?";
+    $deleteQuery = "DELETE FROM surat_masuk WHERE id_surat = ?";
     $stmt = mysqli_prepare($koneksi, $deleteQuery);
     mysqli_stmt_bind_param($stmt, "i", $id_surat);
     $deleteSuccess = mysqli_stmt_execute($stmt);
@@ -335,7 +320,7 @@ elseif (isset($_GET['delete'])) {
 
         echo '<script>
                 alert("Data Berhasil Dihapus");
-                window.location = "' . base_url('surat') . '?jenis=' . $jenis . '";
+                window.location = "' . base_url('surat/surat_masuk') . '";
               </script>';
     } else {
         echo '<script>

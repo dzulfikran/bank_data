@@ -1,7 +1,7 @@
 <?php
 
     // atur zona waktu default ke asia/jakarta
-    date_default_timezone_set('Asia/Jakarta');
+    date_default_timezone_set('Asia/Singapore');
 
     // aktifkan session
     session_start();
@@ -75,3 +75,15 @@
         $result = mysqli_query($koneksi, $query) or die(mysqli_error($koneksi));
         return $result;
     }
+
+    function cek_role($role) {
+        return isset($_SESSION['role']) && $_SESSION['role'] == $role;
+    }
+
+    function is_admin() {
+        return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    }
+    
+    function is_pegawai() {
+        return isset($_SESSION['id_pegawai']) && $_SESSION['id_pegawai'] !== null;
+    }    

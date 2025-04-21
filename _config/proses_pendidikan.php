@@ -44,7 +44,7 @@
                 </script>';
             }   
         }
-    }elseif (isset($_GET['edit'])) {
+    } elseif (isset($_GET['edit'])) {
         $id = mysqli_real_escape_string($koneksi, $_POST['id']);
         $id_pegawai = mysqli_real_escape_string($koneksi, $_POST['id_pegawai']);
         $tingkat = strip_tags($_POST['tingkat']);
@@ -67,4 +67,22 @@
             window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
             </script>';  
         }
-    }
+    } elseif (isset($_GET['delete'])) {
+        $id_pendidikan = intval($_GET['id']);
+        $id_pegawai = intval($_GET['id_pegawai']);
+        
+        // Hapus data pegawai dari database
+        $delete = mysqli_query($koneksi, "DELETE FROM pendidikan WHERE id_pendidikan = $id_pendidikan");
+    
+        if ($delete) {
+            echo '<script>
+            alert("Data Berhasil Dihapus")
+            window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
+            </script>';  
+        } else {
+            echo '<script>
+            alert("Data Gagal Dihapus")
+            window.location = "'.base_url('detail_pegawai').'?id='.$id_pegawai.'";
+            </script>';
+        }
+    } 

@@ -21,8 +21,10 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
+        <?php if (cek_role('admin')) : ?>
         <a href="<?= base_url('tambah_pegawai') ?>" class="btn btn-primary btn-sm float-right"><i class="fas fa-user-plus"></i> Tambah Pegawai</a>
-        <a href="<?= base_url('_report/print_semua_data_pegawai') ?>" target="_blank" class="btn btn-info btn-sm float-right mr-3"><i class="fas fa-print"></i> Print Pegawai</a>
+        <?php endif; ?>
+        <a href="<?= base_url('_report/print_semua_data_pegawai') ?>" target="_blank" class="btn btn-info btn-sm float-right mr-3"><i class="fas fa-print"></i> Print Data Pegawai</a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -41,8 +43,16 @@
             </thead>
             <tbody>
                 <?php
+                    $id_pegawai_login = $_SESSION['id_pegawai'];
                     $no = 1;
-                    $data_p = query("SELECT * FROM pegawai GROUP BY nama_pegawai asc");
+                    // $data_p = query("SELECT * FROM pegawai GROUP BY nama_pegawai asc");
+                    $data_p = query("SELECT * FROM pegawai 
+                                    ORDER BY 
+                                    CASE 
+                                        WHEN id_pegawai = '$id_pegawai_login' THEN 0 
+                                        ELSE 1 
+                                    END, 
+                                    nama_pegawai ASC");
                     foreach ($data_p as $p) : ?>
                         <tr>
                             <td><?= $no++; ?></td>
@@ -54,15 +64,18 @@
                             <td><?= ucwords($p['status_user']) ?></td>
                             <td>
                                 <a href="<?= base_url('detail_pegawai') ?>?id=<?= $p['id_pegawai'] ?>" class="btn btn-success btn-sm"><i class="fas fa-eye"></i> Detail</a>
-                                <a href="<?= base_url('edit_pegawai') ?>?id=<?= $p['id_pegawai'] ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
                                 <a href="<?= base_url('_report/print_data_pegawai') ?>?id=<?= $p['id_pegawai'] ?>" target="_blank" class="btn btn-info btn-sm"><i class="fas fa-print"></i> Print</a>
-                                <a href="<?= base_url('_config/proses_pegawai') ?>?delete&id=<?= $p['id_pegawai'] ?>" 
-                                    class="btn btn-danger btn-sm" 
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </a>
-
-
+                                
+                                <?php if (cek_role('admin') || ($id_pegawai_login == $p['id_pegawai'])) : ?>
+                                <a href="<?= base_url('edit_pegawai') ?>?id=<?= $p['id_pegawai'] ?>" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                                    <?php if (cek_role('admin')) : ?>
+                                    <a href="<?= base_url('_config/proses_pegawai') ?>?delete&id=<?= $p['id_pegawai'] ?>" 
+                                        class="btn btn-danger btn-sm" 
+                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
 
                             </td>
                         </tr>

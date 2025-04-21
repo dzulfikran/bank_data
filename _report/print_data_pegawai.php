@@ -23,7 +23,7 @@
     }
 
     // Ambil foto pegawai atau gunakan default jika tidak ada
-    $foto_path = "../_assets/img/".$pegawai[0]['foto_pegawai'];
+    $foto_path = "../_assets/img/profile/".$pegawai[0]['foto_pegawai'];
     if (file_exists($foto_path) && !empty($pegawai[0]['foto_pegawai'])) {
         $foto_data = file_get_contents($foto_path);
         $foto_base64 = 'data:image/png;base64,' . base64_encode($foto_data);
@@ -51,24 +51,27 @@
     </style></head><body>';
 
     // Kop surat
-    $content .= '<div class="kop-container">
-        <img src="'.$logo_base64.'" class="kop-logo">
-        <div class="kop-text">
-            <h2>PEMERINTAH KABUPATEN BUTON</h2>
-            <h3>DINAS KOMUNIKASI INFORMATIKA DAN PERSANDIAN</h3>
-            <p style="margin:2px;">Kompleks Perkantoran TAKAWA Gedung B Lt. 2</p>
-            <h3>PASARWAJO</h3>
-        </div>
-    </div>
-    <div class="line"></div>';
+    // $content .= '<div class="kop-container">
+    //     <img src="'.$logo_base64.'" class="kop-logo">
+    //     <div class="kop-text">
+    //         <h2>PEMERINTAH KABUPATEN BUTON</h2>
+    //         <h3>DINAS KOMUNIKASI INFORMATIKA DAN PERSANDIAN</h3>
+    //         <p style="margin:2px;">Kompleks Perkantoran TAKAWA Gedung B Lt. 2</p>
+    //         <p style="margin:2px;">Telepon (0402) 2810302 Faximile (0402) 2821221</p>
+    //     </div>
+    // </div>
+    // <div class="line"></div>';
 
     // Foto pegawai di tengah
-    $content .= '<div class="profile-container">
-        <img src="'.$foto_base64.'" class="profile-img" alt="Foto Pegawai">
-    </div>';
+    // $content .= '<div class="profile-container">
+    //     <img src="'.$foto_base64.'" class="profile-img" alt="Foto Pegawai">
+    // </div>';
 
     // Data pegawai
-    $content .= '<h3 style="text-align:center; font-size: 20px; margin-bottom: -5px; ">Data Pegawai</h3><br/>
+    $content .= '<h3 style="text-align:center; font-size: 20px; margin-bottom: -50px; ">Biodata Pegawai</h3><br/>
+    <div class="profile-container">
+        <img src="'.$foto_base64.'" class="profile-img" alt="Foto Pegawai">
+    </div>
     <table class="no-border">
         <tr><th width="30%">NIP</th><td>: '.$pegawai[0]['nip'].'</td></tr>
         <tr><th>Nama Lengkap</th><td>: '.ucwords($pegawai[0]['nama_pegawai']).'</td></tr>
@@ -106,15 +109,15 @@
     }
 
     // Data pendidikan
-    $pendidikan = query("SELECT tingkat, nama_sekolah, lokasi, jurusan, tgl_ijazah, no_ijazah FROM pendidikan WHERE id_pegawai = '$id_pegawai'");
+    $pendidikan = query("SELECT tingkat, nama_sekolah, lokasi, jurusan, tgl_ijazah, no_ijazah FROM pendidikan WHERE id_pegawai = '$id_pegawai' GROUP BY tgl_ijazah asc");
     $content .= createTable("Data Pendidikan", ["No", "Tingkat", "Nama Sekolah", "Lokasi", "Jurusan", "Tanggal Ijazah", "No. Ijazah"], $pendidikan);
 
     // Data jabatan
-    $jabatan = query("SELECT nama_jabatan, eselon, tmt, sampai_tgl, status_jabatan FROM jabatan WHERE id_pegawai = '$id_pegawai'");
+    $jabatan = query("SELECT nama_jabatan, eselon, tmt, sampai_tgl, status_jabatan FROM jabatan WHERE id_pegawai = '$id_pegawai' GROUP BY tmt desc");
     $content .= createTable("Data Jabatan", ["No", "Nama Jabatan", "Eselon", "TMT", "Sampai Tanggal", "Status Jabatan"], $jabatan);
 
     // Data pangkat
-    $pangkat = query("SELECT nama_pangkat, jenis_pangkat, tmt_pangkat, sah_sk, nama_pengesah_sk, no_sk, status_pangkat FROM pangkat WHERE id_pegawai = '$id_pegawai'");
+    $pangkat = query("SELECT nama_pangkat, jenis_pangkat, tmt_pangkat, sah_sk, nama_pengesah_sk, no_sk, status_pangkat FROM pangkat WHERE id_pegawai = '$id_pegawai' GROUP BY tmt_pangkat desc");
     $content .= createTable("Data Pangkat", ["No", "Nama Pangkat", "Jenis Pangkat", "TMT Pangkat", "Sah SK", "Nama Pengesah SK", "No. SK", "Status Pangkat"], $pangkat);
 
     $content .= '</body></html>';

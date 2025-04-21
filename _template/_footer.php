@@ -5,7 +5,7 @@
       <!-- End of Main Content -->
 
       <!-- Footer -->
-      <footer class="sticky-footer bg-white">
+      <footer class="sticky-footer bg-warning">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
             <span>Copyright &copy; DR 2020</span>

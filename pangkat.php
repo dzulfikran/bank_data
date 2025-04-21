@@ -97,6 +97,7 @@
     </div>
     <div class="card-footer">
         <button type="submit" class="btn btn-success float-right"><i class="fas fa-fw fa-save"></i> Simpan</button>
+        <a href="<?= base_url('detail_pegawai') ?>?id=<?= $id_pegawai ?>" class="btn btn-warning"><i class="fas fa-fw fa-chevron-left"></i> Kembali</a>
     </div>
     </form>
 </div>

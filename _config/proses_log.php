@@ -19,7 +19,8 @@
                 // jika passwordnya sama, set session yang akan digunakan untuk fitur login
                 $_SESSION['login'] = 'true';
                 $_SESSION['id_user'] = $data_user['id_user'];
-
+                $_SESSION['role'] = $data_user['role'];
+                $_SESSION['id_pegawai'] = $data_user['id_pegawai'];
                 // cek fitur remember
                 if (isset($_POST['remember'])) {
                     // buat cookie login
@@ -66,3 +67,5 @@
             </script>            
         ";
     }
+
+    

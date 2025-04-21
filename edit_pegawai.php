@@ -129,6 +129,12 @@
                                 O
                             </label>
                         </div>
+                        <div class="form-check d-inline mr-3">
+                            <input class="form-check-input" type="radio" name="goldarah" id="goldarah4" value="-">
+                            <label class="form-check-label" for="goldarah4">
+                                Tidak Tahu
+                            </label>
+                        </div>
                     </div>
                 </div>
             </fieldset>

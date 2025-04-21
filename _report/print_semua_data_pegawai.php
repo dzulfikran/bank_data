@@ -56,16 +56,16 @@ if (file_exists($logo_path)) {
     $logo_base64 = "";
 }
 
-$content .= '<div class="kop">
-    <img src="'.$logo_base64.'" alt="Logo">
-    <h2>PEMERINTAH KABUPATEN BUTON</h2>
-    <h3>DINAS KOMUNIKASI INFORMATIKA DAN PERSANDIAN</h3>
-    <p style="margin:2px;">Kompleks Perkantoran TAKAWA Gedung B Lt. 2</p>
-    <h3>PASARWAJO</h3>
-    <hr/>
-</div>';
+// $content .= '<div class="kop">
+//     <img src="'.$logo_base64.'" alt="Logo">
+//     <h2>PEMERINTAH KABUPATEN BUTON</h2>
+//     <h3>DINAS KOMUNIKASI, INFORMATIKA, DAN PERSANDIAN</h3>
+//     <p style="margin:2px;">Kompleks Perkantoran TAKAWA Gedung B Lantai II</p>
+//     <p style="margin:2px;">Telepon (0402) 2810302 Faximile (0402) 2821221</p>
+//     <hr/>
+// </div>';
 
-$content .= '<center><h3>DAFTAR NAMA PEGAWAI</h3></center>';
+$content .= '<center><h3>DAFTAR PEGAWAI</h3></center>';
 $content .= '<table>
 <thead>
 <tr>
